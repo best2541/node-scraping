@@ -1,6 +1,9 @@
 const pptr = require('puppeteer')
 const ncp = require("copy-paste");
 scrape = async () => {
+    console.log('--------------------------------------------------------------------------------')
+    console.log('โปรแกรมกำลังทำงาน\nเมื่อเสร็จสิ้นโปรแกรมจะปิดตัวเอง สามารกด วาง "CTRL+V" ได้เลย')
+    console.log('--------------------------------------------------------------------------------')
     const browser = await pptr.launch({ headless: false })
     const page = await browser.newPage()
     await page.goto('https://timesheet.orange-thailand.com/home')
