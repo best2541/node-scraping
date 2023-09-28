@@ -24,20 +24,27 @@ scrape = async () => {
         let value = await page.evaluate(res => res?.textContent, datas)
         // console.log('value', value)
         // let datas2 = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div:nth-child(${i}) > div:nth-child(2) > div:nth-child(6)`)
-        let datas2 = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > div:nth-child(2) > div:nth-child(6)`)
-        let value2 = await page.evaluate(res => res?.textContent, datas2)
-        console.log('value', value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0])
-        let jud = value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0]
-        if (jud) {
-            try {
-                result[jud] = [
-                    ...result[jud],
-                    value
-                ]
-            } catch (err) {
-                result[jud] = [
-                    value
-                ]
+        for (let y = 2; y < 10; y++) {
+            let test = await page.$(`body > div.container - fluid > div > div > div: nth - child(2) > div > div.place_more > div > div: nth - child(${i}) > div: nth - child(${y}) > div: nth - child(2)`)
+            let isOther = await page.evaluate(res => res?.textContent, test)
+            if (isOther == 'Others') {
+                let datas2 = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > div:nth-child(${y}) > div:nth-child(6)`)
+                let value2 = await page.evaluate(res => res?.textContent, datas2)
+                console.log('value', value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0])
+                let jud = value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0]
+                if (jud) {
+                    try {
+                        result[jud] = [
+                            ...result[jud],
+                            value
+                        ]
+                    } catch (err) {
+                        result[jud] = [
+                            value
+                        ]
+                    }
+                }
+                break
             }
         }
     }
