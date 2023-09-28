@@ -2,7 +2,7 @@ const pptr = require('puppeteer')
 const ncp = require("copy-paste");
 scrape = async () => {
     console.log('--------------------------------------------------------------------------------')
-    console.log('โปรแกรมกำลังทำงาน\nเมื่อเสร็จสิ้นโปรแกรมจะปิดตัวเอง สามารกด วาง "CTRL+V" ได้เลย')
+    console.log('โปรแกรมกำลังทำงาน\nเมื่อเสร็จสิ้นเว็บจะปิดตัวเอง สามารกด วาง "CTRL+V" ได้เลย')
     console.log('--------------------------------------------------------------------------------')
     const browser = await pptr.launch({ headless: false })
     const page = await browser.newPage()
@@ -19,20 +19,16 @@ scrape = async () => {
     let result = {}
     for (let i = 1; i < text.length; i++) {
         await page.waitForSelector(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div:nth-child(1) > h1`)
-        // let datas = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div:nth-child(${i}) > h1`)
         let datas = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > h1`)
         let value = await page.evaluate(res => res?.textContent, datas)
-        // console.log('value', value)
-        // let datas2 = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div:nth-child(${i}) > div:nth-child(2) > div:nth-child(6)`)
         for (let y = 2; y < 10; y++) {
-            let test = await page.$(`body > div.container - fluid > div > div > div: nth - child(2) > div > div.place_more > div > div: nth - child(${i}) > div: nth - child(${y}) > div: nth - child(2)`)
+            let test = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > div:nth-child(${y}) > div:nth-child(2)`)
             let isOther = await page.evaluate(res => res?.textContent, test)
-            if (isOther == 'Others') {
+            if (isOther?.trim() == 'Others') {
                 let datas2 = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > div:nth-child(${y}) > div:nth-child(6)`)
                 let value2 = await page.evaluate(res => res?.textContent, datas2)
-                console.log('value', value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0])
                 let jud = value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0]
-                if (jud) {
+                if (jud && jud != '2 จุด') {
                     try {
                         result[jud] = [
                             ...result[jud],
@@ -52,14 +48,13 @@ scrape = async () => {
     return result
 }
 scrape().then(async datas => {
-    // console.log('value =', datas)
     const headers = await Object.keys(datas)?.map(header => {
         return parseInt(header.split(' '))
     })
     const sortHeaders = await headers.sort((a, b) => a - b)
     let text = ''
     await sortHeaders?.map(async sorts => {
-        text = `${text}${sorts} จุด\n`
+        text = `${text}${sorts} จุด = ${(sorts - 2) * 150} บาท\n`
         await datas[`${sorts} จุด`]?.map(info => {
             text = `${text}${info}\n`
         })
