@@ -17,14 +17,15 @@ scrape = async () => {
     await page.waitForNetworkIdle({ timeout: 0 })
     const text = await page.evaluate(() => Array.from(document.querySelectorAll('.item_report')))
     let result = {}
-    for (let i = 1; i < text.length; i++) {
+    for (let i = 5; i < text.length + 5; i++) {
         await page.waitForSelector(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div:nth-child(1) > h1`)
         let datas = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > h1`)
         let value = await page.evaluate(res => res?.textContent, datas)
+        console.log('i', i, 'value', value)
         for (let y = 2; y < 10; y++) {
             let test = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > div:nth-child(${y}) > div:nth-child(2)`)
             let isOther = await page.evaluate(res => res?.textContent, test)
-            if (isOther?.trim() == 'Others') {
+            if (isOther?.trim().toLowerCase() == 'others') {
                 let datas2 = await page.$(`body > div.container-fluid > div > div > div:nth-child(2) > div > div.place_more > div > div:nth-child(${i}) > div:nth-child(${y}) > div:nth-child(6)`)
                 let value2 = await page.evaluate(res => res?.textContent, datas2)
                 let jud = value2?.trim()?.split('/')[0]?.split('(')[1]?.split(')')[0]
@@ -60,6 +61,8 @@ scrape().then(async datas => {
         })
     })
     ncp.copy(text, function () {
+        console.log('######################################################################################')
         console.log('เสร็จแล้ว กด paste ได้เลย')
+        console.log('######################################################################################')
     })
 })
